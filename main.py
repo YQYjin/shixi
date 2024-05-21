@@ -262,9 +262,9 @@ def main():
     root.mainloop()
 
 def test():
-    txt_file = 'G:\\Homeworks\\实习\\day2\\21011642-吴锦耀\\Image_419_clustered.txt'  # 你的txt文件路径
-    folder_result = 'G:\\Homeworks\\实习\\day2\\21011642-吴锦耀\\Image_419_result'  # 你的文件夹路径
-    folder = 'G:\\Homeworks\\实习\\day2\\21011642-吴锦耀\\Image_419'  # 你的文件夹路径
+    txt_file = ''  # 你的txt文件路径
+    folder_result = ''  # 你的文件夹路径
+    folder = ''  # 你的文件夹路径
     root = tk.Tk()
 
 
