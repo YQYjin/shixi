@@ -45,106 +45,95 @@ def fetch_images(file_path, dir_name='results', base_url='http://anakv.com/', ma
             # 将编号和识别结果存入字典
             data_dict[index] = result
 
-    # 多线程获取图片
-    # def fetch_image(key, result):
-    #     # 替换字符
-    #     temp_result = result.replace('ū', 'v').replace('š', 'x').replace('ž', 'z')
-    #
-    #     ua = UserAgent()
-    #     headers = {
-    #         'User-Agent': ua.random,
-    #         'Referer': base_url,
-    #         'Origin': base_url
-    #     }
-    #
-    #     data = {
-    #         'input': temp_result,
-    #         'font': 1
-    #     }
-    #
-    #     try:
-    #         # 使用requests获取初始页面
-    #         response = requests.post(url=base_url, data=data, headers=headers)
-    #         response.raise_for_status()  # 检查请求是否成功
-    #         web_text = response.text
-    #
-    #         # 检查是否包含重定向的JavaScript
-    #         if '<script language="javascript">' in web_text:
-    #             # 使用Selenium处理重定向
-    #             options = Options()
-    #             options.headless = True
-    #             options.add_argument('--disable-gpu')
-    #             options.add_argument('--no-sandbox')
-    #             options.add_argument('--disable-dev-shm-usage')
-    #
-    #             service = Service(executable_path='/path/to/chromedriver')  # 替换为chromedriver的实际路径
-    #             with webdriver.Chrome(service=service, options=options) as driver:
-    #                 driver.get(response.url)
-    #                 WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'img')))
-    #                 web_text = driver.page_source
-    #
-    #         # 解析页面内容
-    #         tree = etree.HTML(web_text)
-    #         img_src = tree.xpath('/html/body/div/div[3]/center[1]/a/img/@src')[0]
-    #
-    #         # 创建存储图片的文件夹
-    #         if not os.path.exists(dir_name):
-    #             os.mkdir(dir_name)
-    #
-    #         # 获取图片
-    #         image = requests.get(url=base_url + img_src).content
-    #         with open(os.path.join(dir_name, f'{key}.png'), 'wb') as fp:
-    #             fp.write(image)
-    #         print(f"编号：{key}, 识别结果：{result}, 获取成功！")
-    #
-    #     except Exception as e:
-    #         traceback.print_exc()
-    #         print(f"编号：{key}, 识别结果：{result}, 获取失败！")
 
-    # def fetch_image(key, result):
-    #     # 替换字符
-    #     temp_result = result.replace('ū', 'v').replace('š', 'x').replace('ž', 'z')
-    #
-    #     ua = UserAgent()
-    #     # 定义头信息，包括User-Agent
-    #
-    #     headers = {
-    #         'User-Agent': ua.random,
-    #         #'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-    #         'Referer': base_url,
-    #         'Origin': base_url
-    #     }
-    #
-    #     # 请求参数
-    #     data = {
-    #         'input': temp_result,
-    #         'font': 1
-    #     }
-    #     # print(data)
-    #     # 获取图片src
-    #     try:
-    #         response = requests.post(url=base_url, data=data, headers=headers)
-    #         # for i in range(2):
-    #         #     response = requests.post(url=base_url, data=data, headers=headers)
-    #         #     time.sleep(2)
-    #         print(response.text)
-    #     except Exception as e:
-    #         traceback.print_exc()
-    #         print(f"编号：{key}, 识别结果：{result}, 获取失败！")
-    #     response.encoding = 'utf-8'
-    #     web_text = response.text
-    #     tree = etree.HTML(web_text)
-    #     #print(tree.xpath('/html/body/div/div[3]/center[1]/a/img/@src'))
-    #     img_src = tree.xpath('/html/body/div/div[3]/center[1]/a/img/@src')[0]
-    #     #print(img_src)
-    #     # 创建存储图片的文件夹
-    #     if not os.path.exists(dir_name):
-    #         os.mkdir(dir_name)
-    #     # 获取图片
-    #     image = requests.get(url=base_url + img_src).content
-    #     with open(os.path.join(dir_name, f'{key}.png'), 'wb') as fp:
-    #         fp.write(image)
-    #     print(f"编号：{key}, 识别结果：{result}, 获取成功！")
+    def fetch_image(key, result):
+        # 替换字符
+        temp_result = result.replace('ū', 'v').replace('š', 'x').replace('ž', 'z')
+
+        ua = UserAgent()
+        # 定义头信息，包括User-Agent
+
+        headers = {
+            'User-Agent': ua.random,
+            #'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+            'Referer': base_url,
+            'Origin': base_url
+        }
+
+        # 请求参数
+        data = {
+            'input': temp_result,
+            'font': 1
+        }
+        # print(data)
+        # 获取图片src
+        try:
+            response = requests.post(url=base_url, data=data, headers=headers)
+            # for i in range(2):
+            #     response = requests.post(url=base_url, data=data, headers=headers)
+            #     time.sleep(2)
+            # print(response.text)
+        except Exception as e:
+            traceback.print_exc()
+            print(f"编号：{key}, 识别结果：{result}, 获取失败！")
+        response.encoding = 'utf-8'
+        web_text = response.text
+        tree = etree.HTML(web_text)
+        #print(tree.xpath('/html/body/div/div[3]/center[1]/a/img/@src'))
+        img_src = tree.xpath('/html/body/div/div[3]/center[1]/a/img/@src')[0]
+        #print(img_src)
+        # 创建存储图片的文件夹
+        if not os.path.exists(dir_name):
+            os.mkdir(dir_name)
+        # 获取图片
+        image = requests.get(url=base_url + img_src).content
+        with open(os.path.join(dir_name, f'{key}.png'), 'wb') as fp:
+            fp.write(image)
+        print(f"编号：{key}, 识别结果：{result}, 获取成功！")
+
+    # 使用线程池进行并发处理
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = []
+        for key, result in data_dict.items():
+            future = executor.submit(fetch_image, key, result)
+            futures.append(future)
+
+        for future in as_completed(futures):
+            try:
+                future.result()
+            except Exception as e:
+                #traceback.print_exc()
+                print(f"获取出错：{e}")
+                continue
+
+
+def fetch_images2(file_path, dir_name='results', base_url='http://anakv.com/', max_workers=5):
+    # 如果结果文件夹存在，删除它
+    if os.path.exists(dir_name):
+        shutil.rmtree(dir_name)
+
+    # 初始化一个空字典来存储编号和识别结果
+    data_dict = {}
+
+    # 打开文件并逐行读取
+    with open(file_path, 'r', encoding='utf-8') as file:
+        for line in file:
+            # 去掉行末的换行符和多余的空格
+            line = line.strip()
+
+            # 按照指定格式解析行内容
+            parts = line.split(',')
+            # 获取编号
+            index = int(parts[1].split('：')[1])
+
+            # 获取识别结果
+            result = parts[2].split('：')[1]
+            if result==None or result=="":
+                continue
+            # print("编号：", index, "识别结果：", result)
+            # 将编号和识别结果存入字典
+            data_dict[index] = result
+
 
     def fetch_image(key, result):
         # 替换字符
@@ -165,31 +154,19 @@ def fetch_images(file_path, dir_name='results', base_url='http://anakv.com/', ma
             'input': temp_result,
             'font': 1
         }
-        # print(data)
-        # 获取图片src
-        # try:
-        #     response = requests.post(url=base_url, data=data, headers=headers)
-        #     # for i in range(2):
-        #     #     response = requests.post(url=base_url, data=data, headers=headers)
-        #     #     time.sleep(2)
-        #     print(response.text)
-        # except Exception as e:
-        #     traceback.print_exc()
-        #     print(f"编号：{key}, 识别结果：{result}, 获取失败！")
-        # response.encoding = 'utf-8'
-        # web_text = response.text
-        # tree = etree.HTML(web_text)
-        # #print(tree.xpath('/html/body/div/div[3]/center[1]/a/img/@src'))
-        # img_src = tree.xpath('/html/body/div/div[3]/center[1]/a/img/@src')[0]
-        #print(img_src)
+
         # 创建存储图片的文件夹
         if not os.path.exists(dir_name):
             os.mkdir(dir_name)
         # 获取图片
         image = requests.get(url=base_url + 'msc.php', params=params).content
+
         with open(os.path.join(dir_name, f'{key}.png'), 'wb') as fp:
             fp.write(image)
         print(f"编号：{key}, 识别结果：{result}, 获取成功！")
+
+
+
 
     # 使用线程池进行并发处理
     with ThreadPoolExecutor(max_workers=max_workers) as executor:

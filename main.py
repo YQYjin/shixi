@@ -2,7 +2,11 @@ import os
 import tkinter as tk
 from tkinter import ttk, filedialog
 from PIL import Image, ImageTk
-from get_image import fetch_images
+from get_image import fetch_images,fetch_images2
+
+# 设置获取图片的方法
+# 2代表使用新的fetch_images2方法,1代表使用原来的fetch_images方法
+fetch_method = 2
 
 
 class ImageComparer:
@@ -248,7 +252,10 @@ def main():
     folder_result = os.path.join(os.path.dirname(txt_file_path),
                                  f"{base_name.split('_')[0]}_{base_name.split('_')[1]}_result")
 
-    fetch_images(txt_file_path, folder_result)
+    if fetch_method==1:
+        fetch_images(txt_file_path, folder_result)
+    elif fetch_method==2:
+        fetch_images2(txt_file_path, folder_result)
 
     # image_folder = filedialog.askdirectory(title="选择右侧图片文件夹")
     #
