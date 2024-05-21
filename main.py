@@ -239,7 +239,7 @@ def main():
 
     # 提取页号部分
     page_number_str = txt_file_path.split('_')[1]
-
+    page_number_str = page_number_str.split('.')[0]
     # 去掉前导零并转换为整数
     page_number = int(page_number_str.lstrip('0'))
 
