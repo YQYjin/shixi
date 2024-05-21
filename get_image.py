@@ -1,12 +1,21 @@
 import random
+import time
 import traceback
 
 import requests
+from docker.models.services import Service
 from lxml import etree
 import os
 import shutil
 from fake_useragent import UserAgent
 from concurrent.futures import ThreadPoolExecutor, as_completed
+
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 
 def fetch_images(file_path, dir_name='results', base_url='http://anakv.com/', max_workers=5):
@@ -37,6 +46,106 @@ def fetch_images(file_path, dir_name='results', base_url='http://anakv.com/', ma
             data_dict[index] = result
 
     # 多线程获取图片
+    # def fetch_image(key, result):
+    #     # 替换字符
+    #     temp_result = result.replace('ū', 'v').replace('š', 'x').replace('ž', 'z')
+    #
+    #     ua = UserAgent()
+    #     headers = {
+    #         'User-Agent': ua.random,
+    #         'Referer': base_url,
+    #         'Origin': base_url
+    #     }
+    #
+    #     data = {
+    #         'input': temp_result,
+    #         'font': 1
+    #     }
+    #
+    #     try:
+    #         # 使用requests获取初始页面
+    #         response = requests.post(url=base_url, data=data, headers=headers)
+    #         response.raise_for_status()  # 检查请求是否成功
+    #         web_text = response.text
+    #
+    #         # 检查是否包含重定向的JavaScript
+    #         if '<script language="javascript">' in web_text:
+    #             # 使用Selenium处理重定向
+    #             options = Options()
+    #             options.headless = True
+    #             options.add_argument('--disable-gpu')
+    #             options.add_argument('--no-sandbox')
+    #             options.add_argument('--disable-dev-shm-usage')
+    #
+    #             service = Service(executable_path='/path/to/chromedriver')  # 替换为chromedriver的实际路径
+    #             with webdriver.Chrome(service=service, options=options) as driver:
+    #                 driver.get(response.url)
+    #                 WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'img')))
+    #                 web_text = driver.page_source
+    #
+    #         # 解析页面内容
+    #         tree = etree.HTML(web_text)
+    #         img_src = tree.xpath('/html/body/div/div[3]/center[1]/a/img/@src')[0]
+    #
+    #         # 创建存储图片的文件夹
+    #         if not os.path.exists(dir_name):
+    #             os.mkdir(dir_name)
+    #
+    #         # 获取图片
+    #         image = requests.get(url=base_url + img_src).content
+    #         with open(os.path.join(dir_name, f'{key}.png'), 'wb') as fp:
+    #             fp.write(image)
+    #         print(f"编号：{key}, 识别结果：{result}, 获取成功！")
+    #
+    #     except Exception as e:
+    #         traceback.print_exc()
+    #         print(f"编号：{key}, 识别结果：{result}, 获取失败！")
+
+    # def fetch_image(key, result):
+    #     # 替换字符
+    #     temp_result = result.replace('ū', 'v').replace('š', 'x').replace('ž', 'z')
+    #
+    #     ua = UserAgent()
+    #     # 定义头信息，包括User-Agent
+    #
+    #     headers = {
+    #         'User-Agent': ua.random,
+    #         #'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+    #         'Referer': base_url,
+    #         'Origin': base_url
+    #     }
+    #
+    #     # 请求参数
+    #     data = {
+    #         'input': temp_result,
+    #         'font': 1
+    #     }
+    #     # print(data)
+    #     # 获取图片src
+    #     try:
+    #         response = requests.post(url=base_url, data=data, headers=headers)
+    #         # for i in range(2):
+    #         #     response = requests.post(url=base_url, data=data, headers=headers)
+    #         #     time.sleep(2)
+    #         print(response.text)
+    #     except Exception as e:
+    #         traceback.print_exc()
+    #         print(f"编号：{key}, 识别结果：{result}, 获取失败！")
+    #     response.encoding = 'utf-8'
+    #     web_text = response.text
+    #     tree = etree.HTML(web_text)
+    #     #print(tree.xpath('/html/body/div/div[3]/center[1]/a/img/@src'))
+    #     img_src = tree.xpath('/html/body/div/div[3]/center[1]/a/img/@src')[0]
+    #     #print(img_src)
+    #     # 创建存储图片的文件夹
+    #     if not os.path.exists(dir_name):
+    #         os.mkdir(dir_name)
+    #     # 获取图片
+    #     image = requests.get(url=base_url + img_src).content
+    #     with open(os.path.join(dir_name, f'{key}.png'), 'wb') as fp:
+    #         fp.write(image)
+    #     print(f"编号：{key}, 识别结果：{result}, 获取成功！")
+
     def fetch_image(key, result):
         # 替换字符
         temp_result = result.replace('ū', 'v').replace('š', 'x').replace('ž', 'z')
@@ -45,36 +154,39 @@ def fetch_images(file_path, dir_name='results', base_url='http://anakv.com/', ma
         # 定义头信息，包括User-Agent
 
         headers = {
-            #'User-Agent': ua.random,
             'User-Agent': ua.random,
+            #'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
             'Referer': base_url,
             'Origin': base_url
         }
 
         # 请求参数
-        data = {
+        params = {
             'input': temp_result,
             'font': 1
         }
-
+        # print(data)
         # 获取图片src
-        try:
-            response = requests.post(url=base_url, data=data, headers=headers)
-            #print(response.text)
-        except Exception as e:
-            traceback.print_exc()
-            print(f"编号：{key}, 识别结果：{result}, 获取失败！")
-        response.encoding = 'utf-8'
-        web_text = response.text
-        tree = etree.HTML(web_text)
-        #print(tree.xpath('/html/body/div/div[3]/center[1]/a/img/@src'))
-        img_src = tree.xpath('/html/body/div/div[3]/center[1]/a/img/@src')[0]
+        # try:
+        #     response = requests.post(url=base_url, data=data, headers=headers)
+        #     # for i in range(2):
+        #     #     response = requests.post(url=base_url, data=data, headers=headers)
+        #     #     time.sleep(2)
+        #     print(response.text)
+        # except Exception as e:
+        #     traceback.print_exc()
+        #     print(f"编号：{key}, 识别结果：{result}, 获取失败！")
+        # response.encoding = 'utf-8'
+        # web_text = response.text
+        # tree = etree.HTML(web_text)
+        # #print(tree.xpath('/html/body/div/div[3]/center[1]/a/img/@src'))
+        # img_src = tree.xpath('/html/body/div/div[3]/center[1]/a/img/@src')[0]
         #print(img_src)
         # 创建存储图片的文件夹
         if not os.path.exists(dir_name):
             os.mkdir(dir_name)
         # 获取图片
-        image = requests.get(url=base_url + img_src).content
+        image = requests.get(url=base_url + 'msc.php', params=params).content
         with open(os.path.join(dir_name, f'{key}.png'), 'wb') as fp:
             fp.write(image)
         print(f"编号：{key}, 识别结果：{result}, 获取成功！")
