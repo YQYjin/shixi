@@ -97,7 +97,7 @@ def fetch_images(file_path, dir_name='results', base_url='http://anakv.com/', ma
 
 # 示例调用
 if __name__ == "__main__":
-    txt_file = 'G:\\Homeworks\\实习\\day2\\21011642-吴锦耀\\Image_419_clustered.txt'  # 你的txt文件路径
-    folder = 'G:\\Homeworks\\实习\\day2\\21011642-吴锦耀\\Image_419_test'  # 你的文件夹路径
-    folder_result = 'G:\\Homeworks\\实习\\day2\\21011642-吴锦耀\\Image_419_result'  # 你的文件夹路径
+    txt_file = ''  # 你的txt文件路径
+    folder = ''  # 你的文件夹路径
+    folder_result = ''  # 你的文件夹路径
     fetch_images(txt_file, folder_result)
