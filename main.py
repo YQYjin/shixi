@@ -6,17 +6,42 @@ from get_image import fetch_images
 
 
 class ImageComparer:
-    def __init__(self, root, data_dict, left_folder, right_folder):
+    def __init__(self, root, data_dict, left_folder, right_folder,page_number):
         self.root = root
+        # 不符合要求文件个数
+        self.error_num = 0
         self.data_dict = data_dict
         self.left_folder = left_folder
         self.right_folder = right_folder
-        self.left_images = sorted(os.listdir(left_folder), key=lambda x: int(os.path.splitext(x)[0]))
-        self.right_images = sorted(os.listdir(right_folder), key=lambda x: int(os.path.splitext(x)[0]))
+        self.page_number = page_number
+        # self.left_images = sorted(os.listdir(left_folder), key=lambda x: int(os.path.splitext(x)[0]))
+        # self.right_images = sorted(os.listdir(right_folder), key=lambda x: int(os.path.splitext(x)[0]))
+
+        # 获取左侧文件夹中符合要求的图片文件名
+        self.left_images = self.filter_images(os.listdir(left_folder))
+        # 获取右侧文件夹中符合要求的图片文件名
+        self.right_images = self.filter_images(os.listdir(right_folder))
+
+        # 移除左侧文件夹中与右侧不匹配的文件,即已经命名的文件
+        self.left_images = self.left_images[self.error_num:]
+
         self.index = 0
         self.rename_flag=True;  #记录是正确还是错误,在点击下一个后进行重命名
 
         self.init_gui()
+
+    def filter_images(self, filenames):
+        # 过滤不符合要求的图片文件名
+        filtered_images = []
+        for filename in filenames:
+            # 检查文件名是否符合“{数字}.png”格式
+            if filename[:-4].isdigit() and filename.endswith(".png"):
+                filtered_images.append(filename)
+            else:
+                self.error_num += 1
+        # 按照文件名中的数字进行排序
+        filtered_images.sort(key=lambda x: int(os.path.splitext(x)[0]))
+        return filtered_images
 
     def show_correct_message(self):
         self.correct_window = tk.Toplevel(self.root)
@@ -72,14 +97,14 @@ class ImageComparer:
         self.col_var = tk.StringVar(value="1")  # 设置初始值为 "1"
 
         self.column_label = ttk.Label(self.controls_frame, text="列号")
-        self.column_label.grid(row=0, column=3, padx=5)
+        self.column_label.grid(row=0, column=1, padx=5)
         self.column_entry = ttk.Entry(self.controls_frame, textvariable=self.col_var)
-        self.column_entry.grid(row=0, column=4, padx=5)
+        self.column_entry.grid(row=0, column=2, padx=5)
 
         self.row_label = ttk.Label(self.controls_frame, text="行号")
-        self.row_label.grid(row=0, column=1, padx=5)
+        self.row_label.grid(row=0, column=3, padx=5)
         self.row_entry = ttk.Entry(self.controls_frame, textvariable=self.row_var)
-        self.row_entry.grid(row=0, column=2, padx=5)
+        self.row_entry.grid(row=0, column=4, padx=5)
 
         self.next_column_button = ttk.Button(self.controls_frame, text="下一列", command=self.next_column)
         self.next_column_button.grid(row=0, column=8, padx=5)
@@ -103,6 +128,16 @@ class ImageComparer:
     def display_image(self):
         if self.index >= len(self.right_images):
             return
+
+        while self.index < len(self.right_images):
+            left_image_name = self.left_images[self.index]
+            right_image_name = self.right_images[self.index]
+
+            # 检查两个文件名是否都符合“{数字}.png”格式
+            if left_image_name[:-4].isdigit() and right_image_name[:-4].isdigit():
+                break
+            else:
+                self.index += 1
 
         left_image_path = os.path.join(self.left_folder, self.left_images[self.index])
         right_image_path = os.path.join(self.right_folder, self.right_images[self.index])
@@ -157,7 +192,7 @@ class ImageComparer:
             number = int(os.path.splitext(current_image)[0])
             recognition_result = self.data_dict.get(number, '')
             prefix = '0' if correct else '1'
-            new_name = f"{prefix}_{row}_{column}_{recognition_result}.png"
+            new_name = f"{prefix}_{self.page_number}_{column}_{row}_{recognition_result}.png"
             new_image_path = os.path.join(self.right_folder, new_name)
             current_image_path = os.path.join(self.right_folder, current_image)
             os.rename(current_image_path, new_image_path)
@@ -200,6 +235,12 @@ def main():
 
     data_dict = read_txt_file(txt_file_path)
 
+    # 提取页号部分
+    page_number_str = txt_file_path.split('_')[1]
+
+    # 去掉前导零并转换为整数
+    page_number = int(page_number_str.lstrip('0'))
+
     # 解析txt文件名，生成保存爬取图片的文件夹名称
     base_name = os.path.splitext(os.path.basename(txt_file_path))[0]
     folder_result = os.path.join(os.path.dirname(txt_file_path),
@@ -215,7 +256,7 @@ def main():
     image_folder = os.path.join(os.path.dirname(txt_file_path),
                                  f"{base_name.split('_')[0]}_{base_name.split('_')[1]}")
 
-    app = ImageComparer(root, data_dict, folder_result, image_folder)
+    app = ImageComparer(root, data_dict, folder_result, image_folder,page_number)
     root.mainloop()
 
 def test():
