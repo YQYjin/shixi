@@ -172,6 +172,8 @@ class ImageComparer:
         self.index = (self.index + 1) % len(self.right_images)
         self.display_image()
         self.next_row()
+        self.rename_flag=True
+        
 
     def mark_correct(self):
         self.rename_flag=True
