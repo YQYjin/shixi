@@ -126,6 +126,9 @@ class ImageComparer:
         self.next_button = ttk.Button(self.controls_frame2, text="下一个", command=self.next_image)
         self.next_button.grid(row=0, column=3, padx=5)
 
+        self.next_button = ttk.Button(self.controls_frame2, text="跳过", command=self.skip_image)
+        self.next_button.grid(row=0, column=4, padx=5)
+
         # Display the first image
         self.display_image()
 
@@ -177,7 +180,13 @@ class ImageComparer:
         self.display_image()
         self.next_row()
         self.rename_flag=True
-        
+
+    # 跳过
+    def skip_image(self):
+        self.index = (self.index + 1) % len(self.right_images)
+        self.display_image()
+        self.next_row()
+        self.rename_flag = True
 
     def mark_correct(self):
         self.rename_flag=True
