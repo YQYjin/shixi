@@ -18,7 +18,11 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 
+
+
 def fetch_images(file_path, dir_name='results', base_url='http://anakv.com/', max_workers=10):
+    image_counts = 0
+    image_gets = 0
     # 如果结果文件夹存在，删除它
     if os.path.exists(dir_name):
         shutil.rmtree(dir_name)
@@ -181,6 +185,7 @@ def fetch_images2(file_path, dir_name='results', base_url='http://anakv.com/', m
             except Exception as e:
                 #traceback.print_exc()
                 print(f"获取出错：{e}")
+                print("\033[91m error: 可能会导致图片数量缺少,请重新运行\033[0m")
                 continue
 
 
