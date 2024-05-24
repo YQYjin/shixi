@@ -206,7 +206,10 @@ class ImageComparer:
             current_image = self.right_images[self.index]
             number = int(os.path.splitext(current_image)[0])
             recognition_result = self.data_dict.get(number, '')
+            # 将特殊字符替换 2024.5.24
+            recognition_result = recognition_result.replace('ū', 'v').replace('š', 'x').replace('ž', 'z')
             prefix = '0' if correct else '1'
+
             new_name = f"{prefix}_{self.page_number}_{column}_{row}_{recognition_result}.png"
             new_image_path = os.path.join(self.right_folder, new_name)
             current_image_path = os.path.join(self.right_folder, current_image)
