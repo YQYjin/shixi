@@ -2,7 +2,7 @@ import os
 import tkinter as tk
 from tkinter import ttk, filedialog
 from PIL import Image, ImageTk
-from get_image import fetch_images,fetch_images2
+from get_image import fetch_images,fetch_images2,fetch_images3
 
 # 设置获取图片的方法
 # 2代表使用新的fetch_images2方法,1代表使用原来的fetch_images方法
@@ -254,20 +254,22 @@ def main():
     data_dict = read_txt_file(txt_file_path)
 
     # 提取页号部分
-    page_number_str = txt_file_path.split('_')[1]
+    page_number_str = txt_file_path.split('_',1)[1]
     page_number_str = page_number_str.split('.')[0]
     # 去掉前导零并转换为整数
-    page_number = int(page_number_str.lstrip('0'))
-
+    # page_number = int(page_number_str.lstrip('0'))
+    page_number = page_number_str.lstrip('0')
     # 解析txt文件名，生成保存爬取图片的文件夹名称
     base_name = os.path.splitext(os.path.basename(txt_file_path))[0]
     folder_result = os.path.join(os.path.dirname(txt_file_path),
-                                 f"{base_name.split('_')[0]}_{base_name.split('_')[1]}_result")
+                                 f"{base_name.split('_',1)[0]}_{base_name.split('_',1)[1]}_result")
 
     if fetch_method==1:
         fetch_images(txt_file_path, folder_result)
     elif fetch_method==2:
         fetch_images2(txt_file_path, folder_result)
+    elif fetch_method==3:
+        fetch_images3(txt_file_path, folder_result)
 
     # image_folder = filedialog.askdirectory(title="选择右侧图片文件夹")
     #
@@ -275,7 +277,7 @@ def main():
     #     return
 
     image_folder = os.path.join(os.path.dirname(txt_file_path),
-                                 f"{base_name.split('_')[0]}_{base_name.split('_')[1]}")
+                                 f"{base_name.split('_',1)[0]}_{base_name.split('_',1)[1]}")
 
     app = ImageComparer(root, data_dict, folder_result, image_folder,page_number)
     root.mainloop()
