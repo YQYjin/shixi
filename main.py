@@ -259,6 +259,9 @@ def main():
     # 去掉前导零并转换为整数
     # page_number = int(page_number_str.lstrip('0'))
     page_number = page_number_str.lstrip('0')
+    # 判断方向，如果不是Image_0017_right这种格式，就把下两句注释掉即可
+    page_number = page_number.replace('_right','r')
+    page_number = page_number.replace('_left', 'l')
     # 解析txt文件名，生成保存爬取图片的文件夹名称
     base_name = os.path.splitext(os.path.basename(txt_file_path))[0]
     folder_result = os.path.join(os.path.dirname(txt_file_path),
